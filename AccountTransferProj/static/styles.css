@@ -1,0 +1,29 @@
+
+.top-section{
+    height:100px;
+    width:350px;
+    margin-left:20px;
+    margin-top:40px;
+}
+.section{
+    height:400px;
+    width:250px;
+    margin-left:20px;
+    
+}
+h2{
+    padding:10px;
+}
+h4{
+    font-size: 20px;
+}
+p{
+    font-size: 14px;
+}
+
+.accountsList{
+    max-height: 150px;
+}
+input{
+    border: 6px solid #a6c3d6;
+}

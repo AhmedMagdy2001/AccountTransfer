@@ -11,6 +11,11 @@ from django.conf import settings
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.storage import default_storage
 
+def menu(request):
+    return render(request, 'menu.html')
+
+def dashboard(request):
+    return render(request, 'dashboard.html')
 
 "get and delete accounts"
 class AccountList(APIView):
@@ -38,13 +43,13 @@ class AccountByName(APIView):
     def get(self, request):
         # Get the name from query parameters
         name = request.query_params.get('name', None)
-
+        normalized_name = name.lower()
         if not name:
             return Response({"error": "Name parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Search for the account using the 'Name' field
-            account = Account.objects.get(Name=name)
+            account = Account.objects.get(Name__iexact=normalized_name)
         except Account.DoesNotExist:
             return Response({"error": "Account not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -72,7 +77,7 @@ class ImportAccounts(APIView):
             self.import_accounts_from_csv(full_file_path)
             return Response({"message": "File imported successfully"}, status=200)
         except Exception as e:
-            return Response({"error": str(e)}, status=400)
+            return Response({"error": str(e.message)}, status=400)
 
     def import_accounts_from_csv(self, file_path):
         with open(file_path, 'r') as file:
@@ -111,8 +116,8 @@ class TransferFunds(APIView):
             return Response({"error": "Sender, receiver, and amount are required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            sender_account = Account.objects.get(Name=sender_name)
-            receiver_account = Account.objects.get(Name=receiver_name)
+            sender_account = Account.objects.get(Name__iexact=sender_name.lower())
+            receiver_account = Account.objects.get(Name__iexact=receiver_name.lower())
         except Account.DoesNotExist:
             return Response({"error": "Sender or receiver account not found"}, status=status.HTTP_404_NOT_FOUND)
 
